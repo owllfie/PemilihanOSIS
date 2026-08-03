@@ -1,0 +1,151 @@
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum RoleType {
+  superadmin
+  admin
+  siswa
+  calon_ketua
+  calon_anggota
+  pembina
+  kepala_sekolah
+
+  @@map("role_type")
+}
+
+enum StatusAktifType {
+  aktif
+  nonaktif
+
+  @@map("status_aktif_type")
+}
+
+enum StatusSeleksiType {
+  Menunggu
+  Lulus
+  Tidak_Lulus @map("Tidak Lulus")
+
+  @@map("status_seleksi_type")
+}
+
+enum StatusPeriodeType {
+  aktif
+  selesai
+
+  @@map("status_periode_type")
+}
+
+model User {
+  user_id    Int             @id @default(autoincrement())
+  nama       String          @db.VarChar(100)
+  username   String          @unique @db.VarChar(100)
+  password   String          @db.VarChar(255)
+  role       RoleType
+  status     StatusAktifType @default(aktif)
+  created_at DateTime?       @default(now()) @db.Timestamptz
+  updated_at DateTime?       @default(now()) @db.Timestamptz
+
+  siswa      Siswa?
+  pengumuman Pengumuman[]
+
+  @@map("users")
+}
+
+model Siswa {
+  siswa_id   Int       @id @default(autoincrement())
+  user_id    Int       @unique
+  nis        String    @unique @db.VarChar(20)
+  kelas      String    @db.VarChar(20)
+  rombel     String    @db.VarChar(20)
+  jurusan    String?   @db.VarChar(50)
+  created_at DateTime? @default(now()) @db.Timestamptz
+  updated_at DateTime? @default(now()) @db.Timestamptz
+
+  user               User                 @relation(fields: [user_id], references: [user_id], onDelete: Cascade)
+  calon_ketua_ketua  CalonKetua[]         @relation("KetuaSiswa")
+  calon_ketua_wakil  CalonKetua[]         @relation("WakilSiswa")
+  voting             Voting?
+  calon_anggota_osis CalonAnggotaOsis[]
+
+  @@map("siswa")
+}
+
+model CalonKetua {
+  calon_id   Int             @id @default(autoincrement())
+  ketua_id   Int
+  wakil_id   Int
+  nomor_urut Int             @unique
+  visi       String?         @db.Text
+  misi       String?         @db.Text
+  foto       String?         @db.VarChar(255)
+  status     StatusAktifType @default(aktif)
+
+  ketua        Siswa        @relation("KetuaSiswa", fields: [ketua_id], references: [siswa_id], onDelete: Cascade)
+  wakil        Siswa        @relation("WakilSiswa", fields: [wakil_id], references: [siswa_id], onDelete: Cascade)
+  voting       Voting[]
+  hasil_voting HasilVoting?
+
+  @@map("calon_ketua")
+}
+
+model Voting {
+  voting_id  Int       @id @default(autoincrement())
+  siswa_id   Int       @unique
+  calon_id   Int
+  waktu_vote DateTime? @default(now()) @db.Timestamptz
+
+  siswa Siswa      @relation(fields: [siswa_id], references: [siswa_id], onDelete: Cascade)
+  calon CalonKetua @relation(fields: [calon_id], references: [calon_id], onDelete: Cascade)
+
+  @@map("voting")
+}
+
+model CalonAnggotaOsis {
+  pendaftaran_id Int               @id @default(autoincrement())
+  siswa_id       Int
+  alasan         String?           @db.Text
+  status         StatusSeleksiType @default(Menunggu)
+  tanggal_daftar DateTime?         @default(now()) @db.Date
+
+  siswa Siswa @relation(fields: [siswa_id], references: [siswa_id], onDelete: Cascade)
+
+  @@map("calon_anggota_osis")
+}
+
+model HasilVoting {
+  hasil_id    Int @id @default(autoincrement())
+  calon_id    Int @unique
+  total_suara Int @default(0)
+
+  calon CalonKetua @relation(fields: [calon_id], references: [calon_id], onDelete: Cascade)
+
+  @@map("hasil_voting")
+}
+
+model PeriodePemilihan {
+  periode_id      Int               @id @default(autoincrement())
+  nama_periode    String            @db.VarChar(100)
+  tanggal_mulai   DateTime          @db.Date
+  tanggal_selesai DateTime          @db.Date
+  status          StatusPeriodeType @default(aktif)
+
+  @@map("periode_pemilihan")
+}
+
+model Pengumuman {
+  pengumuman_id Int       @id @default(autoincrement())
+  judul         String    @db.VarChar(100)
+  isi           String    @db.Text
+  dibuat_oleh   Int?
+  tanggal       DateTime? @default(now()) @db.Timestamptz
+
+  creator User? @relation(fields: [dibuat_oleh], references: [user_id], onDelete: SetNull)
+
+  @@map("pengumuman")
+}

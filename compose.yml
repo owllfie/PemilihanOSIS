@@ -1,0 +1,43 @@
+services:
+  frontend:
+    build: ./frontend
+    container_name: pemilihanosis-frontend
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    container_name: pemilihanosis-backend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    environment:
+      PORT: 3000
+      DATABASE_URL: postgresql://postgres:password@postgres:5432/pemilihanosis?schema=public
+      JWT_SECRET: pemilihan_osis_jwt_secret_key_2026_super_secure
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:17
+    container_name: pemilihanosis-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: pemilihanosis
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+volumes:
+  postgres_data:
