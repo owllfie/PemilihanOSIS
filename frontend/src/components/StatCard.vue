@@ -10,13 +10,16 @@
         class="w-12 h-12 rounded-xl flex items-center justify-center font-bold text-lg"
         :class="iconBg || 'bg-[#123a66]/10 text-[#164574] border border-[#c8d8ea]'"
       >
-        <slot name="icon">📊</slot>
+        <slot name="icon"><ChartSpline class="w-6 h-6"></ChartSpline></slot>
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
+
+import { ChartSpline } from 'lucide-vue-next';
+
 defineProps({
   title: String,
   value: [String, Number],

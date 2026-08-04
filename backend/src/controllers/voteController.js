@@ -1,4 +1,4 @@
-const prisma = require('../config/prisma');
+const db = require('../config/db');
 
 exports.vote = async (req, res, next) => {
   try {
@@ -9,7 +9,7 @@ exports.vote = async (req, res, next) => {
     }
 
     // 1. Get logged-in student
-    const siswa = await prisma.siswa.findUnique({
+    const siswa = await db.siswa.findUnique({
       where: { user_id: req.user.user_id },
     });
 
@@ -18,7 +18,7 @@ exports.vote = async (req, res, next) => {
     }
 
     // 2. Check active election period
-    const activePeriod = await prisma.periodePemilihan.findFirst({
+    const activePeriod = await db.periodePemilihan.findFirst({
       where: { status: 'aktif' },
     });
 
@@ -27,7 +27,7 @@ exports.vote = async (req, res, next) => {
     }
 
     // 3. Check if student already voted
-    const existingVote = await prisma.voting.findUnique({
+    const existingVote = await db.voting.findUnique({
       where: { siswa_id: siswa.siswa_id },
     });
 
@@ -36,7 +36,7 @@ exports.vote = async (req, res, next) => {
     }
 
     // 4. Check candidate validity
-    const candidate = await prisma.calonKetua.findUnique({
+    const candidate = await db.calonKetua.findUnique({
       where: { calon_id: parseInt(calon_id) },
     });
 
@@ -45,7 +45,7 @@ exports.vote = async (req, res, next) => {
     }
 
     // 5. Transaction to save vote & update hasil_voting
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await db.$transaction(async (tx) => {
       const newVote = await tx.voting.create({
         data: {
           siswa_id: siswa.siswa_id,
@@ -71,7 +71,7 @@ exports.vote = async (req, res, next) => {
 
 exports.getVoteStatus = async (req, res, next) => {
   try {
-    const siswa = await prisma.siswa.findUnique({
+    const siswa = await db.siswa.findUnique({
       where: { user_id: req.user.user_id },
     });
 
@@ -79,7 +79,7 @@ exports.getVoteStatus = async (req, res, next) => {
       return res.status(404).json({ error: 'Data siswa tidak ditemukan.' });
     }
 
-    const vote = await prisma.voting.findUnique({
+    const vote = await db.voting.findUnique({
       where: { siswa_id: siswa.siswa_id },
       include: {
         calon: {
@@ -91,7 +91,7 @@ exports.getVoteStatus = async (req, res, next) => {
       },
     });
 
-    const activePeriod = await prisma.periodePemilihan.findFirst({
+    const activePeriod = await db.periodePemilihan.findFirst({
       where: { status: 'aktif' },
     });
 

@@ -1,9 +1,9 @@
-const prisma = require('../config/prisma');
+const db = require('../config/db');
 const bcrypt = require('bcryptjs');
 
 exports.getAllUsers = async (req, res, next) => {
   try {
-    const users = await prisma.user.findMany({
+    const users = await db.user.findMany({
       select: {
         user_id: true,
         nama: true,
@@ -29,14 +29,14 @@ exports.createUser = async (req, res, next) => {
       return res.status(400).json({ error: 'Nama, username, password, dan role wajib diisi.' });
     }
 
-    const existingUser = await prisma.user.findUnique({ where: { username } });
+    const existingUser = await db.user.findUnique({ where: { username } });
     if (existingUser) {
       return res.status(400).json({ error: 'Username sudah digunakan.' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const newUser = await prisma.user.create({
+    const newUser = await db.user.create({
       data: {
         nama,
         username,
@@ -57,7 +57,7 @@ exports.updateUser = async (req, res, next) => {
     const { id } = req.params;
     const { nama, username, password, role, status } = req.body;
 
-    const user = await prisma.user.findUnique({ where: { user_id: parseInt(id) } });
+    const user = await db.user.findUnique({ where: { user_id: parseInt(id) } });
     if (!user) {
       return res.status(404).json({ error: 'User tidak ditemukan.' });
     }
@@ -69,7 +69,7 @@ exports.updateUser = async (req, res, next) => {
     if (status) updateData.status = status;
     if (password) updateData.password = await bcrypt.hash(password, 10);
 
-    const updatedUser = await prisma.user.update({
+    const updatedUser = await db.user.update({
       where: { user_id: parseInt(id) },
       data: updateData,
     });
@@ -88,7 +88,7 @@ exports.deleteUser = async (req, res, next) => {
       return res.status(400).json({ error: 'Anda tidak dapat menghapus akun Anda sendiri.' });
     }
 
-    await prisma.user.delete({ where: { user_id: parseInt(id) } });
+    await db.user.delete({ where: { user_id: parseInt(id) } });
     res.json({ message: 'User berhasil dihapus.' });
   } catch (err) {
     next(err);

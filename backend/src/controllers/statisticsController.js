@@ -1,14 +1,14 @@
-const prisma = require('../config/prisma');
+const db = require('../config/db');
 
 exports.getStatistics = async (req, res, next) => {
   try {
-    const totalSiswa = await prisma.siswa.count();
-    const totalPemilih = await prisma.voting.count();
+    const totalSiswa = await db.siswa.count();
+    const totalPemilih = await db.voting.count();
     const belumMemilih = totalSiswa - totalPemilih;
-    const totalKandidat = await prisma.calonKetua.count();
-    const totalPendaftarOsis = await prisma.calonAnggotaOsis.count();
+    const totalKandidat = await db.calonKetua.count();
+    const totalPendaftarOsis = await db.calonAnggotaOsis.count();
 
-    const candidates = await prisma.calonKetua.findMany({
+    const candidates = await db.calonKetua.findMany({
       include: {
         ketua: { include: { user: { select: { nama: true } } } },
         wakil: { include: { user: { select: { nama: true } } } },
@@ -17,7 +17,7 @@ exports.getStatistics = async (req, res, next) => {
       orderBy: { nomor_urut: 'asc' },
     });
 
-    const activePeriod = await prisma.periodePemilihan.findFirst({
+    const activePeriod = await db.periodePemilihan.findFirst({
       where: { status: 'aktif' },
     });
 
@@ -30,7 +30,7 @@ exports.getStatistics = async (req, res, next) => {
     }));
 
     // Status pendaftaran OSIS
-    const registationsByStatus = await prisma.calonAnggotaOsis.groupBy({
+    const registationsByStatus = await db.calonAnggotaOsis.groupBy({
       by: ['status'],
       _count: { pendaftaran_id: true },
     });
@@ -55,8 +55,8 @@ exports.getStatistics = async (req, res, next) => {
 
 exports.getReportData = async (req, res, next) => {
   try {
-    const period = await prisma.periodePemilihan.findFirst({ orderBy: { periode_id: 'desc' } });
-    const candidates = await prisma.calonKetua.findMany({
+    const period = await db.periodePemilihan.findFirst({ orderBy: { periode_id: 'desc' } });
+    const candidates = await db.calonKetua.findMany({
       include: {
         ketua: { include: { user: { select: { nama: true } } } },
         wakil: { include: { user: { select: { nama: true } } } },
@@ -65,8 +65,8 @@ exports.getReportData = async (req, res, next) => {
       orderBy: { nomor_urut: 'asc' },
     });
 
-    const totalSiswa = await prisma.siswa.count();
-    const totalSuara = await prisma.voting.count();
+    const totalSiswa = await db.siswa.count();
+    const totalSuara = await db.voting.count();
 
     const report = {
       tanggal_cetak: new Date().toISOString(),

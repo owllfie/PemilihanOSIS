@@ -167,15 +167,15 @@ EXECUTE FUNCTION update_timestamp();
 -- Initial Data / Seed Sample Data
 -- ------------------------------------------------------------
 INSERT INTO users (nama, username, password, role, status) VALUES
-('Super Admin', 'superadmin', '$2b$10$e8O0aN0.P.4e7k6v/4y6h.L24hJ3sJ2s5J0J0J0J0J0J0J0J0J0J0', 'superadmin', 'aktif'),
-('Admin OSIS', 'admin', '$2b$10$e8O0aN0.P.4e7k6v/4y6h.L24hJ3sJ2s5J0J0J0J0J0J0J0J0J0J0', 'admin', 'aktif'),
-('Pembina OSIS', 'pembina', '$2b$10$e8O0aN0.P.4e7k6v/4y6h.L24hJ3sJ2s5J0J0J0J0J0J0J0J0J0J0', 'pembina', 'aktif'),
-('Kepala Sekolah', 'kepsek', '$2b$10$e8O0aN0.P.4e7k6v/4y6h.L24hJ3sJ2s5J0J0J0J0J0J0J0J0J0J0', 'kepala_sekolah', 'aktif'),
-('Budi Santoso', 'budi_ketua', '$2b$10$e8O0aN0.P.4e7k6v/4y6h.L24hJ3sJ2s5J0J0J0J0J0J0J0J0J0J0', 'calon_ketua', 'aktif'),
-('Siti Rahma', 'siti_wakil', '$2b$10$e8O0aN0.P.4e7k6v/4y6h.L24hJ3sJ2s5J0J0J0J0J0J0J0J0J0J0', 'siswa', 'aktif'),
-('Andi Pratama', 'andi_ketua', '$2b$10$e8O0aN0.P.4e7k6v/4y6h.L24hJ3sJ2s5J0J0J0J0J0J0J0J0J0J0', 'calon_ketua', 'aktif'),
-('Dewi Lestari', 'dewi_wakil', '$2b$10$e8O0aN0.P.4e7k6v/4y6h.L24hJ3sJ2s5J0J0J0J0J0J0J0J0J0J0', 'siswa', 'aktif'),
-('Eko Wijaya', 'eko_siswa', '$2b$10$e8O0aN0.P.4e7k6v/4y6h.L24hJ3sJ2s5J0J0J0J0J0J0J0J0J0J0', 'siswa', 'aktif');
+('Super Admin', 'superadmin', '$2b$10$rCPTIutT/dLNKDcSbTZX5udMPUkku98sTwLXfpdgZgvs3AeBQTzr2', 'superadmin', 'aktif'),
+('Admin OSIS', 'admin', '$2b$10$rCPTIutT/dLNKDcSbTZX5udMPUkku98sTwLXfpdgZgvs3AeBQTzr2', 'admin', 'aktif'),
+('Pembina OSIS', 'pembina', '$2b$10$rCPTIutT/dLNKDcSbTZX5udMPUkku98sTwLXfpdgZgvs3AeBQTzr2', 'pembina', 'aktif'),
+('Kepala Sekolah', 'kepsek', '$2b$10$rCPTIutT/dLNKDcSbTZX5udMPUkku98sTwLXfpdgZgvs3AeBQTzr2', 'kepala_sekolah', 'aktif'),
+('Budi Santoso', 'budi_ketua', '$2b$10$rCPTIutT/dLNKDcSbTZX5udMPUkku98sTwLXfpdgZgvs3AeBQTzr2', 'calon_ketua', 'aktif'),
+('Siti Rahma', 'siti_wakil', '$2b$10$rCPTIutT/dLNKDcSbTZX5udMPUkku98sTwLXfpdgZgvs3AeBQTzr2', 'siswa', 'aktif'),
+('Andi Pratama', 'andi_ketua', '$2b$10$rCPTIutT/dLNKDcSbTZX5udMPUkku98sTwLXfpdgZgvs3AeBQTzr2', 'calon_ketua', 'aktif'),
+('Dewi Lestari', 'dewi_wakil', '$2b$10$rCPTIutT/dLNKDcSbTZX5udMPUkku98sTwLXfpdgZgvs3AeBQTzr2', 'siswa', 'aktif'),
+('Eko Wijaya', 'eko_siswa', '$2b$10$rCPTIutT/dLNKDcSbTZX5udMPUkku98sTwLXfpdgZgvs3AeBQTzr2', 'siswa', 'aktif');
 
 INSERT INTO siswa (user_id, nis, kelas, rombel, jurusan) VALUES
 (5, '1001', 'XI', 'XI-IPA-1', 'IPA'),

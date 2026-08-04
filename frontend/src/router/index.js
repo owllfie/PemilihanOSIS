@@ -13,6 +13,7 @@ import Registration from '@/pages/Registration.vue';
 import Student from '@/pages/Student.vue';
 import Users from '@/pages/Users.vue';
 import Profile from '@/pages/Profile.vue';
+import ChartDemo from '@/pages/ChartDemo.vue';
 
 const routes = [
   {
@@ -78,6 +79,11 @@ const routes = [
         path: 'profile',
         name: 'Profile',
         component: Profile,
+      },
+      {
+        path: 'chart-demo',
+        name: 'ChartDemo',
+        component: ChartDemo,
       },
     ],
   },

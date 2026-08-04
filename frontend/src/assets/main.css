@@ -1,53 +1,213 @@
 @import "tailwindcss";
 
+/* Enable class-based dark mode for Tailwind v4 */
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* ─── Design Tokens (Light) ──────────────────────────────────── */
 @layer base {
   :root {
-    color-scheme: light;
-    --navy-950: #0b1f3a;
-    --navy-800: #123a66;
-    --navy-600: #1f5c99;
-    --ink: #0f2a4a;
-    --muted: #52677d;
-    --line: #d8e2ee;
-    --paper: #ffffff;
-    --surface: #f8fafc;
+    /* Surfaces */
+    --color-bg:        #eef3f8;
+    --color-surface:   #ffffff;
+    --color-surface-2: #f8fafc;
+    /* Text */
+    --color-text:      #0f2a4a;
+    --color-text-muted:#52677d;
+    --color-text-dim:  #334e68;
+    --color-text-link: #164574;
+    /* Borders */
+    --color-border:    #d8e2ee;
+    --color-border-2:  #c8d8ea;
+    /* Primary action — inverted so it contrasts the surface */
+    --color-btn-bg:    #0b1f3a;   /* dark navy in light mode */
+    --color-btn-text:  #ffffff;
+    --color-btn-hover: #123a66;
+    /* Accent */
+    --color-accent:    #0b1f3a;
+    --color-accent-2:  #123a66;
+  }
+
+  /* ─── Design Tokens (Dark) ────────────────────────────────── */
+  html.dark {
+    /* Surfaces */
+    --color-bg:        #080f1e;
+    --color-surface:   #0f172a;
+    --color-surface-2: #1e293b;
+    /* Text */
+    --color-text:      #f1f5f9;
+    --color-text-muted:#94a3b8;
+    --color-text-dim:  #cbd5e1;
+    --color-text-link: #93c5fd;
+    /* Borders */
+    --color-border:    #1e293b;
+    --color-border-2:  #334155;
+    /* Primary action — inverted: light button on dark surface */
+    --color-btn-bg:    #f1f5f9;   /* light on dark */
+    --color-btn-text:  #0b1f3a;
+    --color-btn-hover: #ffffff;
+    /* Accent */
+    --color-accent:    #818cf8;
+    --color-accent-2:  #6366f1;
   }
 
   body {
-    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-    @apply bg-[#eef3f8] text-[#0f2a4a] antialiased min-h-screen;
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    @apply antialiased min-h-screen transition-colors duration-300;
   }
 
-  h1,
-  h2,
-  h3 {
-    letter-spacing: -0.02em;
-  }
+  h1, h2, h3 { letter-spacing: -0.02em; }
 
-  input,
-  select,
-  textarea {
+  input, select, textarea {
     @apply placeholder:text-[#8a9bae];
   }
 
-  button,
-  a {
-    @apply transition-colors duration-150;
-  }
+  button, a { @apply transition-colors duration-150; }
 }
 
-/* Custom Scrollbar */
-::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+/* Interactive controls deliberately use the opposite surface contrast. */
+.theme-toggle-button {
+  background-color: var(--color-btn-bg);
+  color: var(--color-btn-text);
+  border-color: var(--color-border-2);
 }
-::-webkit-scrollbar-track {
-  background: #eef3f8;
+
+.theme-toggle-button:hover {
+  background-color: var(--color-btn-hover);
 }
-::-webkit-scrollbar-thumb {
-  background: #b7c6d8;
-  border-radius: 9999px;
+
+/* ─── Custom Scrollbar ────────────────────────────────────────── */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb { background: #b7c6d8; border-radius: 9999px; }
+::-webkit-scrollbar-thumb:hover { background: #8fa4bb; }
+
+/* ═══════════════════════════════════════════════════════════════
+   GLOBAL DARK-MODE OVERRIDES
+   These handle every hardcoded Tailwind arbitrary-value color
+   class used across pages and components.
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Backgrounds ─────────────────────────────────────────────── */
+html.dark .bg-white { background-color: var(--color-surface) !important; }
+html.dark .bg-\[\#eef3f8\]  { background-color: var(--color-bg) !important; }
+html.dark .bg-\[\#f8fafc\]  { background-color: var(--color-surface-2) !important; }
+html.dark .bg-\[\#0b1f3a\]  { background-color: #1e293b !important; }
+html.dark .bg-\[\#123a66\]  { background-color: #334155 !important; }
+html.dark .bg-\[\#e8eef6\]  { background-color: #1e293b !important; }
+
+/* ── Borders ─────────────────────────────────────────────────── */
+html.dark .border-\[\#d8e2ee\]  { border-color: var(--color-border) !important; }
+html.dark .border-\[\#c8d8ea\]  { border-color: var(--color-border) !important; }
+html.dark .border-\[\#b9c8da\]  { border-color: #334155 !important; }
+html.dark .border-\[\#b7cbe2\]  { border-color: #334155 !important; }
+html.dark .border-\[\#9fb8d4\]  { border-color: #334155 !important; }
+html.dark .border-l-\[\#0b1f3a\] { border-left-color: #818cf8 !important; }
+
+/* ── Text ────────────────────────────────────────────────────── */
+html.dark .text-\[\#0b1f3a\]  { color: #f1f5f9 !important; }
+html.dark .text-\[\#0f2a4a\]  { color: #cbd5e1 !important; }
+html.dark .text-\[\#102a44\]  { color: #f1f5f9 !important; }
+html.dark .text-\[\#334e68\]  { color: #94a3b8 !important; }
+html.dark .text-\[\#52677d\]  { color: #64748b !important; }
+html.dark .text-\[\#164574\]  { color: #93c5fd !important; }
+html.dark .text-\[\#1f5c99\]  { color: #60a5fa !important; }
+html.dark .text-\[\#6b7f95\]  { color: #64748b !important; }
+
+/* Keep explicit dark text utilities readable on dark surfaces. */
+html.dark .text-black,
+html.dark .text-gray-900,
+html.dark .text-gray-800,
+html.dark .text-slate-900,
+html.dark .text-slate-800 {
+  color: var(--color-text) !important;
 }
-::-webkit-scrollbar-thumb:hover {
-  background: #8fa4bb;
+
+/* A light action surface must always use dark action text. */
+html.dark button.bg-slate-100,
+html.dark a.bg-slate-100,
+html.dark span.bg-slate-200.text-white,
+html.dark .bg-slate-100.text-white,
+html.dark button.bg-white.text-white,
+html.dark a.bg-white.text-white {
+  color: var(--color-btn-text) !important;
+}
+
+/* ── Accent tints ────────────────────────────────────────────── */
+html.dark .bg-\[\#123a66\]\/10 { background-color: rgba(99,102,241,0.12) !important; }
+html.dark .bg-\[\#123a66\]\/20 { background-color: rgba(99,102,241,0.18) !important; }
+html.dark .text-\[\#123a66\]   { color: #818cf8 !important; }
+html.dark .border-\[\#b7cbe2\] { border-color: rgba(99,102,241,0.3) !important; }
+
+/* ── Form inputs ─────────────────────────────────────────────── */
+html.dark input,
+html.dark select,
+html.dark textarea {
+  background-color: var(--color-surface-2) !important;
+  border-color: var(--color-border-2) !important;
+  color: var(--color-text) !important;
+}
+html.dark input::placeholder,
+html.dark textarea::placeholder { color: #64748b !important; }
+html.dark input:focus,
+html.dark select:focus,
+html.dark textarea:focus {
+  border-color: #6366f1 !important;
+  outline-color: #6366f1 !important;
+}
+
+/* ═══════════════════════════════════════════════════════════════
+   INVERTED BUTTONS
+   Light mode → dark buttons (navy bg, white text)
+   Dark mode  → light buttons (white/slate bg, dark text)
+   ═══════════════════════════════════════════════════════════════ */
+
+/* Primary / navy buttons */
+html.dark button.bg-\[\#0b1f3a\],
+html.dark a.bg-\[\#0b1f3a\] {
+  background-color: var(--color-btn-bg) !important;
+  color: var(--color-btn-text) !important;
+}
+html.dark button.hover\:bg-\[\#123a66\]:hover,
+html.dark a.hover\:bg-\[\#123a66\]:hover {
+  background-color: var(--color-btn-hover) !important;
+}
+html.dark button.hover\:opacity-95:hover,
+html.dark a.hover\:opacity-95:hover { opacity: 0.9 !important; }
+
+/* Inline-block router-link voting button */
+html.dark .inline-block.bg-\[\#0b1f3a\] {
+  background-color: var(--color-btn-bg) !important;
+  color: var(--color-btn-text) !important;
+}
+html.dark .inline-block.hover\:bg-\[\#123a66\]:hover {
+  background-color: var(--color-btn-hover) !important;
+}
+
+/* Secondary: bg-[#e8eef6] cancel / secondary buttons */
+html.dark button.bg-\[\#e8eef6\],
+html.dark a.bg-\[\#e8eef6\] {
+  background-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+html.dark button.hover\:bg-\[\#d0dcea\]:hover,
+html.dark a.hover\:bg-\[\#d0dcea\]:hover {
+  background-color: #475569 !important;
+}
+
+/* Paslon badge: bg-[#123a66] */
+html.dark .bg-\[\#123a66\].text-white {
+  background-color: #334155 !important;
+  color: #f1f5f9 !important;
+}
+
+/* ── Card backgrounds ────────────────────────────────────────── */
+html.dark .border-y.border-r {
+  border-color: var(--color-border) !important;
+}
+
+/* ── Modal ───────────────────────────────────────────────────── */
+html.dark .bg-\[\#0b1f3a\]\/35 {
+  background-color: rgba(0, 0, 0, 0.6) !important;
 }

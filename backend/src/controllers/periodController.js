@@ -1,8 +1,8 @@
-const prisma = require('../config/prisma');
+const db = require('../config/db');
 
 exports.getAllPeriods = async (req, res, next) => {
   try {
-    const periods = await prisma.periodePemilihan.findMany({
+    const periods = await db.periodePemilihan.findMany({
       orderBy: { periode_id: 'desc' },
     });
     res.json(periods);
@@ -13,7 +13,7 @@ exports.getAllPeriods = async (req, res, next) => {
 
 exports.getActivePeriod = async (req, res, next) => {
   try {
-    const activePeriod = await prisma.periodePemilihan.findFirst({
+    const activePeriod = await db.periodePemilihan.findFirst({
       where: { status: 'aktif' },
     });
     res.json({ active_period: activePeriod || null });
@@ -32,12 +32,12 @@ exports.createPeriod = async (req, res, next) => {
 
     // If new status is aktif, set all other periods to selesai
     if (status === 'aktif') {
-      await prisma.periodePemilihan.updateMany({
+      await db.periodePemilihan.updateMany({
         data: { status: 'selesai' },
       });
     }
 
-    const newPeriod = await prisma.periodePemilihan.create({
+    const newPeriod = await db.periodePemilihan.create({
       data: {
         nama_periode,
         tanggal_mulai: new Date(tanggal_mulai),
@@ -63,13 +63,13 @@ exports.updatePeriodStatus = async (req, res, next) => {
 
     if (status === 'aktif') {
       // Deactivate other active periods
-      await prisma.periodePemilihan.updateMany({
+      await db.periodePemilihan.updateMany({
         where: { periode_id: { not: parseInt(id) } },
         data: { status: 'selesai' },
       });
     }
 
-    const updated = await prisma.periodePemilihan.update({
+    const updated = await db.periodePemilihan.update({
       where: { periode_id: parseInt(id) },
       data: { status },
     });

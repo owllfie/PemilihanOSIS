@@ -1,8 +1,8 @@
-const prisma = require('../config/prisma');
+const db = require('../config/db');
 
 exports.getAllCandidates = async (req, res, next) => {
   try {
-    const candidates = await prisma.calonKetua.findMany({
+    const candidates = await db.calonKetua.findMany({
       include: {
         ketua: {
           include: {
@@ -53,7 +53,7 @@ exports.getAllCandidates = async (req, res, next) => {
 exports.getCandidateById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const candidate = await prisma.calonKetua.findUnique({
+    const candidate = await db.calonKetua.findUnique({
       where: { calon_id: parseInt(id) },
       include: {
         ketua: { include: { user: true } },
@@ -88,7 +88,7 @@ exports.createCandidate = async (req, res, next) => {
       return res.status(400).json({ error: 'Ketua dan Wakil harus siswa yang berbeda.' });
     }
 
-    const existingNo = await prisma.calonKetua.findUnique({
+    const existingNo = await db.calonKetua.findUnique({
       where: { nomor_urut: parseInt(nomor_urut) },
     });
 
@@ -101,7 +101,7 @@ exports.createCandidate = async (req, res, next) => {
       fotoName = req.file.filename;
     }
 
-    const newCandidate = await prisma.calonKetua.create({
+    const newCandidate = await db.calonKetua.create({
       data: {
         ketua_id: parseInt(ketua_id),
         wakil_id: parseInt(wakil_id),
@@ -114,16 +114,16 @@ exports.createCandidate = async (req, res, next) => {
     });
 
     // Also update role user for ketua to calon_ketua
-    const ketuaSiswa = await prisma.siswa.findUnique({ where: { siswa_id: parseInt(ketua_id) } });
+    const ketuaSiswa = await db.siswa.findUnique({ where: { siswa_id: parseInt(ketua_id) } });
     if (ketuaSiswa) {
-      await prisma.user.update({
+      await db.user.update({
         where: { user_id: ketuaSiswa.user_id },
         data: { role: 'calon_ketua' },
       });
     }
 
     // Initialize hasil_voting
-    await prisma.hasilVoting.create({
+    await db.hasilVoting.create({
       data: {
         calon_id: newCandidate.calon_id,
         total_suara: 0,
@@ -141,7 +141,7 @@ exports.updateCandidate = async (req, res, next) => {
     const { id } = req.params;
     const { ketua_id, wakil_id, nomor_urut, visi, misi, status } = req.body;
 
-    const candidate = await prisma.calonKetua.findUnique({ where: { calon_id: parseInt(id) } });
+    const candidate = await db.calonKetua.findUnique({ where: { calon_id: parseInt(id) } });
     if (!candidate) {
       return res.status(404).json({ error: 'Kandidat tidak ditemukan.' });
     }
@@ -158,7 +158,7 @@ exports.updateCandidate = async (req, res, next) => {
       updateData.foto = req.file.filename;
     }
 
-    const updatedCandidate = await prisma.calonKetua.update({
+    const updatedCandidate = await db.calonKetua.update({
       where: { calon_id: parseInt(id) },
       data: updateData,
     });
@@ -173,12 +173,12 @@ exports.deleteCandidate = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const candidate = await prisma.calonKetua.findUnique({ where: { calon_id: parseInt(id) } });
+    const candidate = await db.calonKetua.findUnique({ where: { calon_id: parseInt(id) } });
     if (!candidate) {
       return res.status(404).json({ error: 'Kandidat tidak ditemukan.' });
     }
 
-    await prisma.calonKetua.delete({ where: { calon_id: parseInt(id) } });
+    await db.calonKetua.delete({ where: { calon_id: parseInt(id) } });
 
     res.json({ message: 'Kandidat berhasil dihapus.' });
   } catch (err) {
@@ -189,12 +189,12 @@ exports.deleteCandidate = async (req, res, next) => {
 exports.getCandidateProfile = async (req, res, next) => {
   try {
     // Find candidate pair where logged-in user's siswa_id matches ketua or wakil
-    const siswa = await prisma.siswa.findUnique({ where: { user_id: req.user.user_id } });
+    const siswa = await db.siswa.findUnique({ where: { user_id: req.user.user_id } });
     if (!siswa) {
       return res.status(404).json({ error: 'Data siswa pengguna tidak ditemukan.' });
     }
 
-    const candidate = await prisma.calonKetua.findFirst({
+    const candidate = await db.calonKetua.findFirst({
       where: {
         OR: [{ ketua_id: siswa.siswa_id }, { wakil_id: siswa.siswa_id }],
       },
@@ -221,12 +221,12 @@ exports.getCandidateProfile = async (req, res, next) => {
 
 exports.updateCandidateProfile = async (req, res, next) => {
   try {
-    const siswa = await prisma.siswa.findUnique({ where: { user_id: req.user.user_id } });
+    const siswa = await db.siswa.findUnique({ where: { user_id: req.user.user_id } });
     if (!siswa) {
       return res.status(404).json({ error: 'Data siswa pengguna tidak ditemukan.' });
     }
 
-    const candidate = await prisma.calonKetua.findFirst({
+    const candidate = await db.calonKetua.findFirst({
       where: {
         OR: [{ ketua_id: siswa.siswa_id }, { wakil_id: siswa.siswa_id }],
       },
@@ -245,7 +245,7 @@ exports.updateCandidateProfile = async (req, res, next) => {
       updateData.foto = req.file.filename;
     }
 
-    const updated = await prisma.calonKetua.update({
+    const updated = await db.calonKetua.update({
       where: { calon_id: candidate.calon_id },
       data: updateData,
     });
@@ -258,7 +258,7 @@ exports.updateCandidateProfile = async (req, res, next) => {
 
 exports.getCandidateResults = async (req, res, next) => {
   try {
-    const candidates = await prisma.calonKetua.findMany({
+    const candidates = await db.calonKetua.findMany({
       include: {
         ketua: { include: { user: { select: { nama: true } } } },
         wakil: { include: { user: { select: { nama: true } } } },

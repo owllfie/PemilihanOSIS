@@ -1,9 +1,9 @@
-const prisma = require('../config/prisma');
+const db = require('../config/db');
 const bcrypt = require('bcryptjs');
 
 exports.getAllStudents = async (req, res, next) => {
   try {
-    const students = await prisma.siswa.findMany({
+    const students = await db.siswa.findMany({
       include: {
         user: {
           select: {
@@ -26,7 +26,7 @@ exports.getAllStudents = async (req, res, next) => {
 exports.getStudentById = async (req, res, next) => {
   try {
     const { id } = req.params;
-    const student = await prisma.siswa.findUnique({
+    const student = await db.siswa.findUnique({
       where: { siswa_id: parseInt(id) },
       include: {
         user: {
@@ -59,19 +59,19 @@ exports.createStudent = async (req, res, next) => {
       return res.status(400).json({ error: 'Nama, username, password, NIS, kelas, dan rombel wajib diisi.' });
     }
 
-    const existingUser = await prisma.user.findUnique({ where: { username } });
+    const existingUser = await db.user.findUnique({ where: { username } });
     if (existingUser) {
       return res.status(400).json({ error: 'Username sudah digunakan.' });
     }
 
-    const existingNis = await prisma.siswa.findUnique({ where: { nis } });
+    const existingNis = await db.siswa.findUnique({ where: { nis } });
     if (existingNis) {
       return res.status(400).json({ error: 'NIS sudah terdaftar.' });
     }
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await db.$transaction(async (tx) => {
       const newUser = await tx.user.create({
         data: {
           nama,
@@ -107,7 +107,7 @@ exports.updateStudent = async (req, res, next) => {
     const { id } = req.params;
     const { nama, username, password, nis, kelas, rombel, jurusan, status } = req.body;
 
-    const student = await prisma.siswa.findUnique({ where: { siswa_id: parseInt(id) } });
+    const student = await db.siswa.findUnique({ where: { siswa_id: parseInt(id) } });
     if (!student) {
       return res.status(404).json({ error: 'Data siswa tidak ditemukan.' });
     }
@@ -126,7 +126,7 @@ exports.updateStudent = async (req, res, next) => {
     if (rombel) updateSiswaData.rombel = rombel;
     if (jurusan !== undefined) updateSiswaData.jurusan = jurusan;
 
-    const result = await prisma.$transaction(async (tx) => {
+    const result = await db.$transaction(async (tx) => {
       if (Object.keys(updateUserData).length > 0) {
         await tx.user.update({
           where: { user_id: student.user_id },
@@ -153,13 +153,13 @@ exports.deleteStudent = async (req, res, next) => {
   try {
     const { id } = req.params;
 
-    const student = await prisma.siswa.findUnique({ where: { siswa_id: parseInt(id) } });
+    const student = await db.siswa.findUnique({ where: { siswa_id: parseInt(id) } });
     if (!student) {
       return res.status(404).json({ error: 'Data siswa tidak ditemukan.' });
     }
 
     // Deleting user will cascade delete siswa record
-    await prisma.user.delete({ where: { user_id: student.user_id } });
+    await db.user.delete({ where: { user_id: student.user_id } });
 
     res.json({ message: 'Data siswa berhasil dihapus.' });
   } catch (err) {

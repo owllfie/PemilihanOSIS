@@ -1,8 +1,8 @@
-const prisma = require('../config/prisma');
+const db = require('../config/db');
 
 exports.getAllAnnouncements = async (req, res, next) => {
   try {
-    const announcements = await prisma.pengumuman.findMany({
+    const announcements = await db.pengumuman.findMany({
       include: {
         creator: {
           select: { nama: true, role: true },
@@ -24,7 +24,7 @@ exports.createAnnouncement = async (req, res, next) => {
       return res.status(400).json({ error: 'Judul dan isi pengumuman wajib diisi.' });
     }
 
-    const announcement = await prisma.pengumuman.create({
+    const announcement = await db.pengumuman.create({
       data: {
         judul,
         isi,
@@ -44,7 +44,7 @@ exports.createAnnouncement = async (req, res, next) => {
 exports.deleteAnnouncement = async (req, res, next) => {
   try {
     const { id } = req.params;
-    await prisma.pengumuman.delete({
+    await db.pengumuman.delete({
       where: { pengumuman_id: parseInt(id) },
     });
     res.json({ message: 'Pengumuman berhasil dihapus.' });

@@ -1,10 +1,10 @@
-const prisma = require('../config/prisma');
+const db = require('../config/db');
 
 exports.registerCandidateMember = async (req, res, next) => {
   try {
     const { alasan } = req.body;
 
-    const siswa = await prisma.siswa.findUnique({
+    const siswa = await db.siswa.findUnique({
       where: { user_id: req.user.user_id },
     });
 
@@ -12,7 +12,7 @@ exports.registerCandidateMember = async (req, res, next) => {
       return res.status(403).json({ error: 'Hanya siswa terdaftar yang dapat mendaftar calon anggota OSIS.' });
     }
 
-    const existingReg = await prisma.calonAnggotaOsis.findFirst({
+    const existingReg = await db.calonAnggotaOsis.findFirst({
       where: { siswa_id: siswa.siswa_id },
     });
 
@@ -20,7 +20,7 @@ exports.registerCandidateMember = async (req, res, next) => {
       return res.status(400).json({ error: 'Anda sudah pernah mengirimkan pendaftaran calon anggota OSIS.' });
     }
 
-    const registration = await prisma.calonAnggotaOsis.create({
+    const registration = await db.calonAnggotaOsis.create({
       data: {
         siswa_id: siswa.siswa_id,
         alasan: alasan || '',
@@ -39,7 +39,7 @@ exports.registerCandidateMember = async (req, res, next) => {
 
 exports.getRegistrationStatus = async (req, res, next) => {
   try {
-    const siswa = await prisma.siswa.findUnique({
+    const siswa = await db.siswa.findUnique({
       where: { user_id: req.user.user_id },
     });
 
@@ -47,7 +47,7 @@ exports.getRegistrationStatus = async (req, res, next) => {
       return res.status(404).json({ error: 'Data siswa tidak ditemukan.' });
     }
 
-    const registration = await prisma.calonAnggotaOsis.findFirst({
+    const registration = await db.calonAnggotaOsis.findFirst({
       where: { siswa_id: siswa.siswa_id },
     });
 
@@ -59,7 +59,7 @@ exports.getRegistrationStatus = async (req, res, next) => {
 
 exports.getAllRegistrations = async (req, res, next) => {
   try {
-    const registrations = await prisma.calonAnggotaOsis.findMany({
+    const registrations = await db.calonAnggotaOsis.findMany({
       include: {
         siswa: {
           include: {
@@ -87,7 +87,7 @@ exports.updateRegistrationStatus = async (req, res, next) => {
 
     const enumStatus = status === 'Tidak_Lulus' ? 'Tidak_Lulus' : status;
 
-    const registration = await prisma.calonAnggotaOsis.update({
+    const registration = await db.calonAnggotaOsis.update({
       where: { pendaftaran_id: parseInt(id) },
       data: { status: enumStatus },
       include: {

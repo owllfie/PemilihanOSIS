@@ -1,5 +1,5 @@
 <template>
-  <aside class="w-64 bg-white border-r border-[#d8e2ee] hidden lg:block shrink-0 p-4 min-h-[calc(100vh-61px)]">
+  <aside class="w-64 bg-white dark:bg-[#0b1f3a] border-r border-[#d8e2ee] dark:border-[#1a365d] hidden lg:block shrink-0 p-4 min-h-[calc(100vh-61px)] transition-colors duration-300">
     <nav class="space-y-1">
       <router-link
         v-for="item in navItems"
@@ -9,8 +9,8 @@
         class="flex items-center space-x-3 px-3 py-2.5 rounded-xl font-medium text-sm transition-all duration-200"
         :class="[
           $route.path === item.path
-            ? 'bg-[#0b1f3a] text-white shadow-sm font-semibold'
-            : 'text-[#52677d] hover:text-[#102a44] hover:bg-[#f8fafc]'
+            ? 'bg-[#0b1f3a] dark:bg-white dark:text-[#0b1f3a] text-white shadow-sm font-semibold'
+            : 'text-[#52677d] dark:text-gray-400 hover:text-[#102a44] dark:hover:text-white hover:bg-[#f8fafc] dark:hover:bg-[#1a365d]'
         ]"
       >
         <span>{{ item.label }}</span>
@@ -62,8 +62,8 @@ const navItems = computed(() => [
     visible: ['admin', 'superadmin'].includes(authStore.role),
   },
   {
-    label: 'Profil Saya',
-    path: '/profile',
+    label: 'Demo Chart',
+    path: '/chart-demo',
     visible: true,
   },
 ]);

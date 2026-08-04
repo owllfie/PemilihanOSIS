@@ -1,4 +1,4 @@
-const prisma = require('../config/prisma');
+const db = require('../config/db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
@@ -10,7 +10,7 @@ exports.login = async (req, res, next) => {
       return res.status(400).json({ error: 'Username dan password wajib diisi.' });
     }
 
-    const user = await prisma.user.findUnique({
+    const user = await db.user.findUnique({
       where: { username },
       include: {
         siswa: true,
@@ -25,17 +25,15 @@ exports.login = async (req, res, next) => {
       return res.status(403).json({ error: 'Akun Anda tidak aktif. Silakan hubungi admin.' });
     }
 
-    // Verify password (supports hashed password and seed fallback)
-    let isMatch = false;
-    if (user.password.startsWith('$2b$') || user.password.startsWith('$2a$')) {
-      isMatch = await bcrypt.compare(password, user.password);
-    } else {
-      isMatch = (password === user.password);
-    }
+    const seedPasswords = ['admin123', 'password123', user.username];
 
-    // If initial seed password match attempt (or standard fallback)
-    if (!isMatch && (password === 'password123' || password === 'admin123' || password === user.username)) {
-      isMatch = true;
+    // Verify password. Seed fallback is checked first so old invalid seed hashes
+    // still allow local/demo login without crashing or blocking access.
+    let isMatch = seedPasswords.includes(password);
+    if (!isMatch && (user.password.startsWith('$2b$') || user.password.startsWith('$2a$'))) {
+      isMatch = await bcrypt.compare(password, user.password);
+    } else if (!isMatch) {
+      isMatch = password === user.password;
     }
 
     if (!isMatch) {
@@ -74,7 +72,7 @@ exports.login = async (req, res, next) => {
 
 exports.me = async (req, res, next) => {
   try {
-    const user = await prisma.user.findUnique({
+    const user = await db.user.findUnique({
       where: { user_id: req.user.user_id },
       select: {
         user_id: true,

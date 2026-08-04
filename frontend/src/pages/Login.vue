@@ -1,11 +1,14 @@
 <template>
-  <div class="bg-white border border-[#d8e2ee] rounded-3xl p-8 shadow-sm">
-    <div class="text-center mb-8">
-      <div class="w-16 h-16 rounded-2xl bg-[#0b1f3a] mx-auto flex items-center justify-center mb-4">
-        <span class="font-black text-3xl text-white">O</span>
+  <div class="bg-white dark:bg-[#0b1f3a] border border-[#d8e2ee] dark:border-[#1a365d] rounded-3xl p-8 shadow-sm">
+    <div class="text-center mb-8 flex flex-col items-center">
+      <!-- Logo Placeholder -->
+      <div class="w-16 h-16 rounded-2xl bg-[#0b1f3a] dark:bg-white text-white dark:text-[#0b1f3a] flex items-center justify-center mb-4 shadow-md shrink-0">
+        <svg class="w-10 h-10" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
       </div>
-      <h2 class="text-2xl font-black text-[#0b1f3a] tracking-tight">Sistem Pemilihan OSIS</h2>
-      <p class="text-xs text-[#52677d] mt-1">Silakan masuk menggunakan akun terdaftar Anda</p>
+      <h2 class="text-2xl font-black text-[#0b1f3a] dark:text-white tracking-tight">Sistem Pemilihan OSIS</h2>
+      <p class="text-xs text-[#52677d] dark:text-gray-400 mt-1">Silakan masukkan username dan password</p>
     </div>
 
     <div v-if="error" class="mb-4 p-3.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-semibold">
@@ -44,18 +47,6 @@
         <span v-else>Masuk ke Sistem</span>
       </button>
     </form>
-
-    <!-- Preset Role Logins for testing convenience -->
-    <div class="mt-8 pt-6 border-t border-[#d8e2ee] text-center">
-      <p class="text-xs font-bold text-[#52677d] uppercase tracking-wider mb-3">Akun Demo (Klik untuk Isi):</p>
-      <div class="flex flex-wrap gap-1.5 justify-center">
-        <button @click="quickFill('admin', 'password123')" class="px-2.5 py-1 text-[11px] rounded-lg bg-[#f8fafc] hover:bg-[#e8eef6] text-[#123a66] border border-[#d8e2ee] cursor-pointer">Admin</button>
-        <button @click="quickFill('budi_ketua', 'password123')" class="px-2.5 py-1 text-[11px] rounded-lg bg-[#f8fafc] hover:bg-[#e8eef6] text-[#1f5c99] border border-[#d8e2ee] cursor-pointer">Calon Ketua</button>
-        <button @click="quickFill('eko_siswa', 'password123')" class="px-2.5 py-1 text-[11px] rounded-lg bg-[#f8fafc] hover:bg-[#e8eef6] text-[#286140] border border-[#d8e2ee] cursor-pointer">Siswa</button>
-        <button @click="quickFill('pembina', 'password123')" class="px-2.5 py-1 text-[11px] rounded-lg bg-[#f8fafc] hover:bg-[#e8eef6] text-[#8a5a00] border border-[#d8e2ee] cursor-pointer">Pembina</button>
-        <button @click="quickFill('kepsek', 'password123')" class="px-2.5 py-1 text-[11px] rounded-lg bg-[#f8fafc] hover:bg-[#e8eef6] text-[#4b3b7a] border border-[#d8e2ee] cursor-pointer">Kepala Sekolah</button>
-      </div>
-    </div>
   </div>
 </template>
 
