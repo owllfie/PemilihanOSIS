@@ -103,7 +103,6 @@ import {
   ClipboardList,
   GraduationCap,
   ShieldCheck,
-  LineChart,
   LogOut,
   X,
   UserRound,
@@ -152,12 +151,6 @@ const navItems = computed(() => [
     path: '/users',
     icon: ShieldCheck,
     visible: ['admin', 'superadmin'].includes(authStore.role),
-  },
-  {
-    label: 'Demo Chart',
-    path: '/chart-demo',
-    icon: LineChart,
-    visible: true,
   },
 ]);
 

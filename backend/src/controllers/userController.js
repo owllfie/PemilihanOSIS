@@ -4,6 +4,7 @@ const bcrypt = require('bcryptjs');
 exports.getAllUsers = async (req, res, next) => {
   try {
     const users = await db.user.findMany({
+      where: { role: { not: 'superadmin' } },
       select: {
         user_id: true,
         nama: true,

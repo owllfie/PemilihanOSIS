@@ -80,7 +80,6 @@
             <option value="calon_anggota">Calon Anggota OSIS</option>
             <option value="pembina">Pembina OSIS</option>
             <option value="kepala_sekolah">Kepala Sekolah</option>
-            <option value="superadmin">Super Admin</option>
           </select>
         </div>
         <div>

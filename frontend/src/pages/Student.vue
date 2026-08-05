@@ -80,16 +80,25 @@
         <div class="grid grid-cols-2 gap-3">
           <div>
             <label class="block text-xs font-bold text-[#334e68] uppercase mb-1">Kelas</label>
-            <input v-model="form.kelas" type="text" required class="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-[#d8e2ee] text-[#0b1f3a] text-sm" placeholder="Contoh: XI" />
+            <select v-model="form.kelas" @change="onKelasChange" required class="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-[#d8e2ee] text-[#0b1f3a] text-sm">
+              <option value="" disabled>Pilih Kelas</option>
+              <option v-for="k in kelasOptions" :key="k" :value="k">{{ k }}</option>
+            </select>
           </div>
           <div>
             <label class="block text-xs font-bold text-[#334e68] uppercase mb-1">Rombel</label>
-            <input v-model="form.rombel" type="text" required class="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-[#d8e2ee] text-[#0b1f3a] text-sm" placeholder="Contoh: XI-IPA-1" />
+            <select v-model="form.rombel" @change="syncJurusan" required class="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-[#d8e2ee] text-[#0b1f3a] text-sm">
+              <option value="" disabled>Pilih Rombel</option>
+              <option v-for="r in rombelOptions" :key="r" :value="r">{{ r }}</option>
+            </select>
           </div>
         </div>
         <div>
           <label class="block text-xs font-bold text-[#334e68] uppercase mb-1">Jurusan</label>
-          <input v-model="form.jurusan" type="text" class="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-[#d8e2ee] text-[#0b1f3a] text-sm" placeholder="IPA / IPS / Dll" />
+          <select v-model="form.jurusan" class="w-full px-3.5 py-2.5 rounded-xl bg-[#f8fafc] border border-[#d8e2ee] text-[#0b1f3a] text-sm">
+            <option value="" disabled>Pilih Jurusan</option>
+            <option v-for="j in jurusanOptions" :key="j" :value="j">{{ j }}</option>
+          </select>
         </div>
 
         <div class="pt-4 flex justify-end space-x-3">
@@ -102,13 +111,26 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, computed, onMounted } from 'vue';
 import { useAuthStore } from '@/stores/auth';
 import { useStudentStore } from '@/stores/student';
 import Modal from '@/components/Modal.vue';
 
 const authStore = useAuthStore();
 const studentStore = useStudentStore();
+
+const kelasOptions = ['VII', 'VIII', 'IX', 'X', 'XI', 'XII'];
+
+const jurusanOptions = ['RPL', 'AKL', 'BDP'];
+
+const ROMBEL_OPTIONS = {
+  VII: ['VII A', 'VII B', 'VII C'],
+  VIII: ['VIII A', 'VIII B', 'VIII C'],
+  IX: ['IX A', 'IX B', 'IX C'],
+  X: ['X RPL A', 'X RPL B', 'X AKL', 'X BDP'],
+  XI: ['XI RPL A', 'XI RPL B', 'XI AKL', 'XI BDP'],
+  XII: ['XII RPL A', 'XII RPL B', 'XII AKL', 'XII BDP'],
+};
 
 const showModal = ref(false);
 const isEdit = ref(false);
@@ -123,6 +145,18 @@ const form = ref({
   rombel: '',
   jurusan: '',
 });
+
+const rombelOptions = computed(() => ROMBEL_OPTIONS[form.value.kelas] || Object.values(ROMBEL_OPTIONS).flat());
+
+const syncJurusan = () => {
+  const found = jurusanOptions.find((j) => form.value.rombel.includes(j));
+  form.value.jurusan = found || '';
+};
+
+const onKelasChange = () => {
+  form.value.rombel = '';
+  form.value.jurusan = '';
+};
 
 const editStudent = (s) => {
   isEdit.value = true;
