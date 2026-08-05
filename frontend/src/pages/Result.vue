@@ -5,25 +5,18 @@
         <h2 class="text-2xl font-black text-[#0b1f3a]">Hasil & Rekapitulasi E-Voting</h2>
         <p class="text-xs text-[#52677d] mt-1">Perolehan suara langsung Pemilihan Ketua & Wakil OSIS</p>
       </div>
-
-      <button
-        @click="printReport"
-        class="px-4 py-2.5 rounded-xl bg-[#f8fafc] hover:bg-[#e8eef6] text-[#0b1f3a] font-bold text-xs border border-[#d8e2ee] shadow-sm flex items-center space-x-2 cursor-pointer print:hidden"
-      >
-        <span>🖨️ Cetak / Export Laporan PDF</span>
-      </button>
     </div>
 
     <!-- Summary Metrics -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
       <StatCard title="Total Pemilih Voted" :value="stats.total_pemilih" subtitle="Suara sah masuk">
-        <template #icon>📥</template>
+        <template #icon></template>
       </StatCard>
       <StatCard title="Total DPT (Siswa)" :value="stats.total_siswa" subtitle="Pemilih terdaftar">
-        <template #icon>📋</template>
+        <template #icon></template>
       </StatCard>
       <StatCard title="Tingkat Partisipasi" :value="stats.partisipasi_persen + '%'" subtitle="Persentase pemilih">
-        <template #icon>📈</template>
+        <template #icon></template>
       </StatCard>
     </div>
 
@@ -38,8 +31,8 @@
         </div>
         <div class="w-full bg-[#f8fafc] h-4 rounded-full overflow-hidden p-0.5 border border-[#d8e2ee]">
           <div
-            class="bg-[#0b1f3a] h-full rounded-full transition-all duration-1000 shadow-sm"
-            :style="{ width: c.persentase + '%' }"
+            class="h-full rounded-full transition-all duration-1000 shadow-sm"
+            :style="{ width: c.persentase + '%', backgroundColor: c.color }"
           ></div>
         </div>
       </div>
@@ -98,6 +91,8 @@ import { ref, onMounted } from 'vue';
 import StatCard from '@/components/StatCard.vue';
 import api from '@/services/api';
 
+const PALETTE = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
+
 const candidates = ref([]);
 const stats = ref({
   total_siswa: 0,
@@ -109,7 +104,7 @@ const loadData = async () => {
   try {
     const res = await api.get('/statistics');
     stats.value = res.data.summary;
-    candidates.value = res.data.candidates;
+    candidates.value = (res.data.candidates || []).map((c, i) => ({ ...c, color: PALETTE[i % PALETTE.length] }));
   } catch (err) {
     console.error(err);
   }

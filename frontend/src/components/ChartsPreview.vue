@@ -1,138 +1,169 @@
 <template>
-  <div class="mx-auto flex w-full max-w-2xl flex-col items-center gap-5">
-    <div class="relative w-full overflow-hidden">
-      <transition name="chart-slide" mode="out-in">
-        <div :key="activeSlide.id" class="w-full">
-          <div class="mx-auto w-full max-w-lg">
-            <Bar
-              v-if="activeSlide.id === 'bar'"
-              :data="barChartData"
-              :options="barChartOptions"
-            />
-            <Line
-              v-else
-              :data="lineChartData"
-              :options="lineChartOptions"
-            />
-          </div>
-        </div>
-      </transition>
-    </div>
-
-    <div class="flex w-full items-center justify-between gap-3">
-      <button
-        type="button"
-        aria-label="Previous chart"
-        class="inline-flex size-8 items-center justify-center rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surface-2)]"
-        @click="goToSlide(slideIndex - 1)"
-      >
-        <ChevronLeft class="size-4" />
-      </button>
+  <div class="mx-auto flex w-full flex-col items-center gap-4">
+    <div class="relative h-72 sm:h-80 w-full overflow-hidden">
+      <Line
+        v-if="hasData"
+        :data="lineChartData"
+        :options="lineChartOptions"
+      />
       <div
-        class="flex items-center gap-2"
-        role="tablist"
-        aria-label="Chart examples"
+        v-else
+        class="flex h-full w-full items-center justify-center rounded-lg border border-dashed border-[var(--color-border)] text-xs text-[var(--color-text-muted)]"
       >
-        <button
-          v-for="(slide, index) in chartSlides"
-          :key="slide.id"
-          type="button"
-          role="tab"
-          :aria-label="slide.label"
-          :aria-selected="index === slideIndex"
-          class="rounded-full transition-all duration-300"
-          :class="index === slideIndex
-            ? 'h-2 w-6 bg-[var(--color-text)]'
-            : 'size-2 bg-[var(--color-text-muted)] opacity-35'"
-          @click="goToSlide(index)"
-        />
+        Belum ada data suara, menunggu pembaruan realtime&hellip;
       </div>
-      <button
-        type="button"
-        aria-label="Next chart"
-        class="inline-flex size-8 items-center justify-center rounded-md border border-[var(--color-border)] bg-[var(--color-surface)] text-[var(--color-text)] hover:bg-[var(--color-surface-2)]"
-        @click="goToSlide(slideIndex + 1)"
-      >
-        <ChevronRight class="size-4" />
-      </button>
     </div>
-    <p class="text-center text-xs text-[var(--color-text-muted)]">
-      {{ activeSlide.label }}
-    </p>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
-import { ChevronLeft, ChevronRight } from 'lucide-vue-next';
+import { ref, computed, watch, onMounted, onUnmounted } from 'vue';
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  BarElement,
-  LineElement,
   PointElement,
+  LineElement,
+  Filler,
   Title,
   Tooltip,
   Legend,
-  Filler,
 } from 'chart.js';
-import { Bar, Line } from 'vue-chartjs';
+import { Line } from 'vue-chartjs';
+import api from '@/services/api';
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
-  BarElement,
-  LineElement,
   PointElement,
+  LineElement,
+  Filler,
   Title,
   Tooltip,
-  Legend,
-  Filler
+  Legend
 );
 
-const chartSlides = [
-  { id: 'bar', label: 'Bar chart' },
-  { id: 'line', label: 'Line chart' },
-];
+const props = defineProps({
+  candidates: {
+    type: Array,
+    default: () => [],
+  },
+});
 
-const slideIndex = ref(0);
+const POLL_INTERVAL_MS = 10000;
+const MAX_POINTS = 30;
 
-const activeSlide = computed(() => chartSlides[slideIndex.value]);
+const PALETTE = ['#2563eb', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#ec4899'];
 
-function goToSlide(nextIndex) {
-  slideIndex.value = (nextIndex + chartSlides.length) % chartSlides.length;
+const history = ref([]);
+const names = ref({});
+const lastUpdated = ref('');
+let pollTimer = null;
+
+const realtimeEnabled = computed(() => props.candidates && props.candidates.length > 0);
+const hasData = computed(() => history.value.length > 0);
+
+function pushSnapshot(source) {
+  const now = new Date();
+  const votes = {};
+  source.forEach((c, index) => {
+    const id = c.calon_id ?? c.id ?? `idx_${index}`;
+    votes[id] = c.total_suara ?? c.suara ?? 0;
+    names.value[id] = c.nama_paslon || `Paslon ${c.nomor_urut ?? index + 1}`;
+  });
+  history.value.push({ time: now.toLocaleTimeString('id-ID'), votes });
+  if (history.value.length > MAX_POINTS) {
+    history.value.shift();
+  }
+  lastUpdated.value = now.toLocaleTimeString('id-ID');
 }
 
-const barChartData = computed(() => ({
-  labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-  datasets: [
-    {
-      label: 'Sessions',
-      data: [1240, 1580, 1420, 1890, 1760, 2100],
-      backgroundColor: '#2563eb',
-      borderRadius: 4,
-    },
-    {
-      label: 'Conversions',
-      data: [420, 510, 480, 620, 590, 710],
-      backgroundColor: '#7dd3fc',
-      borderRadius: 4,
-    },
-  ],
-}));
+async function fetchSnapshot() {
+  try {
+    const res = await api.get('/statistics');
+    const cands = res.data.candidates || [];
+    if (cands.length) {
+      pushSnapshot(cands);
+    }
+  } catch (err) {
+    console.error(err);
+  }
+}
 
-const barChartOptions = computed(() => ({
+watch(
+  () => props.candidates,
+  (val) => {
+    if (val && val.length) {
+      pushSnapshot(val);
+    }
+  },
+  { deep: true }
+);
+
+onMounted(async () => {
+  if (realtimeEnabled.value) {
+    pushSnapshot(props.candidates);
+  } else {
+    await fetchSnapshot();
+    pollTimer = setInterval(fetchSnapshot, POLL_INTERVAL_MS);
+  }
+});
+
+onUnmounted(() => {
+  if (pollTimer) {
+    clearInterval(pollTimer);
+    pollTimer = null;
+  }
+});
+
+const lineChartData = computed(() => {
+  if (!history.value.length) {
+    return { labels: [], datasets: [] };
+  }
+
+  const labels = history.value.map((h) => h.time);
+
+  const candidateIds = [];
+  history.value.forEach((h) => {
+    Object.keys(h.votes).forEach((id) => {
+      if (!candidateIds.includes(id)) {
+        candidateIds.push(id);
+      }
+    });
+  });
+
+  const datasets = candidateIds.map((id, i) => ({
+    label: names.value[id] || `Paslon ${i + 1}`,
+    data: history.value.map((h) => h.votes[id] ?? 0),
+    borderColor: PALETTE[i % PALETTE.length],
+    backgroundColor: PALETTE[i % PALETTE.length] + '26',
+    borderWidth: 2,
+    pointRadius: 0,
+    pointHoverRadius: 4,
+    pointHitRadius: 8,
+    tension: 0.3,
+    fill: true,
+  }));
+
+  return { labels, datasets };
+});
+
+const lineChartOptions = computed(() => ({
   responsive: true,
   maintainAspectRatio: false,
-  animation: { duration: 480, easing: 'ease-out' },
+  animation: { duration: 500, easing: 'ease-out' },
+  interaction: { intersect: false, mode: 'index' },
   plugins: {
     legend: {
       display: true,
       position: 'bottom',
       labels: {
         color: 'var(--color-text-muted)',
-        font: { size: 12 },
+        font: { size: 11 },
+        boxWidth: 10,
+        boxHeight: 10,
+        usePointStyle: true,
+        pointStyle: 'circle',
       },
     },
     tooltip: {
@@ -148,7 +179,12 @@ const barChartOptions = computed(() => ({
   scales: {
     x: {
       grid: { display: false },
-      ticks: { color: 'var(--color-text-muted)' },
+      ticks: {
+        color: 'var(--color-text-muted)',
+        font: { size: 10 },
+        maxTicksLimit: 6,
+        maxRotation: 0,
+      },
     },
     y: {
       beginAtZero: true,
@@ -160,78 +196,4 @@ const barChartOptions = computed(() => ({
     },
   },
 }));
-
-const lineChartData = computed(() => ({
-  labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
-  datasets: [
-    {
-      label: 'Sessions',
-      data: [520, 470, 560, 495, 545, 485],
-      borderColor: '#2563eb',
-      backgroundColor: 'transparent',
-      borderWidth: 2,
-      pointRadius: 0,
-      tension: 0.3,
-    },
-    {
-      label: 'Conversions',
-      data: [480, 540, 505, 565, 490, 530],
-      borderColor: '#7dd3fc',
-      backgroundColor: 'transparent',
-      borderWidth: 2,
-      pointRadius: 0,
-      tension: 0.3,
-    },
-  ],
-}));
-
-const lineChartOptions = computed(() => ({
-  responsive: true,
-  maintainAspectRatio: false,
-  animation: { duration: 480, easing: 'ease-out' },
-  plugins: {
-    legend: {
-      display: true,
-      position: 'bottom',
-      labels: {
-        color: 'var(--color-text-muted)',
-        font: { size: 12 },
-      },
-    },
-    tooltip: {
-      backgroundColor: 'var(--color-surface)',
-      titleColor: 'var(--color-text)',
-      bodyColor: 'var(--color-text-muted)',
-      borderColor: 'var(--color-border)',
-      borderWidth: 1,
-      padding: 10,
-      cornerRadius: 8,
-    },
-  },
-  scales: {
-    x: {
-      grid: { display: false },
-      ticks: { color: 'var(--color-text-muted)' },
-    },
-    y: {
-      min: 400,
-      max: 600,
-      grid: { color: 'var(--color-border)' },
-      ticks: { color: 'var(--color-text-muted)' },
-    },
-  },
-}));
 </script>
-
-<style scoped>
-.chart-slide-enter-active,
-.chart-slide-leave-active {
-  transition: opacity 0.22s ease, transform 0.22s ease;
-}
-.chart-slide-enter-from {
-  opacity: 0;
-}
-.chart-slide-leave-to {
-  opacity: 0;
-}
-</style>

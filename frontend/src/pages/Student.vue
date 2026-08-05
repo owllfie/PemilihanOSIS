@@ -31,7 +31,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-[#d8e2ee]">
-            <tr v-for="s in studentStore.students" :key="s.siswa_id" class="hover:bg-[#f1f5f9] transition-colors">
+            <tr v-for="s in studentStore.students" :key="s.siswa_id" class="hover:bg-[#eef3f8] dark:hover:bg-[#1e293b] transition-colors">
               <td class="px-6 py-4 font-mono font-bold text-[#164574]">{{ s.nis }}</td>
               <td class="px-6 py-4 font-bold text-[#0b1f3a]">{{ s.user?.nama }}</td>
               <td class="px-6 py-4 text-[#52677d]">{{ s.user?.username }}</td>
@@ -46,8 +46,8 @@
                 </span>
               </td>
               <td v-if="authStore.isAdmin" class="px-6 py-4 text-right space-x-2">
-                <button @click="editStudent(s)" class="px-2.5 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 text-[11px] font-semibold cursor-pointer">Edit</button>
-                <button @click="deleteStudent(s.siswa_id)" class="px-2.5 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 text-[11px] font-semibold cursor-pointer">Hapus</button>
+                <button @click="editStudent(s)" class="px-2.5 py-1 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-black text-[11px] font-semibold cursor-pointer">Edit</button>
+                <button @click="deleteStudent(s.siswa_id)" class="px-2.5 py-1 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-black text-[11px] font-semibold cursor-pointer">Hapus</button>
               </td>
             </tr>
             <tr v-if="studentStore.students.length === 0">

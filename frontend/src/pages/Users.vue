@@ -29,7 +29,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-[#d8e2ee]">
-            <tr v-for="u in users" :key="u.user_id" class="hover:bg-[#f1f5f9] transition-colors">
+            <tr v-for="u in users" :key="u.user_id" class="hover:bg-[#eef3f8] dark:hover:bg-[#1e293b] transition-colors">
               <td class="px-6 py-4 font-mono font-bold text-[#6b7f95]">#{{ u.user_id }}</td>
               <td class="px-6 py-4 font-bold text-[#0b1f3a]">{{ u.nama }}</td>
               <td class="px-6 py-4 font-mono text-[#52677d]">{{ u.username }}</td>

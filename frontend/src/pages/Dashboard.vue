@@ -1,45 +1,5 @@
 <template>
   <div class="space-y-6">
-    <!-- Header Welcome Banner -->
-    <div class="bg-white dark:bg-[#0b1f3a] border-l-4 border-l-[#0b1f3a] dark:border-l-blue-400 border-y border-r border-[#c8d8ea] dark:border-[#1a365d] rounded-3xl p-6 sm:p-8 relative overflow-hidden shadow-sm transition-colors duration-300">
-      <div class="relative z-10">
-        <h2 class="text-2xl sm:text-3xl font-black text-[#0b1f3a] dark:text-white">Selamat Datang, {{ authStore.nama }}!</h2>
-      </div>
-    </div>
-
-    <!-- Active Period Status Banner (For Admin Control) -->
-    <div v-if="authStore.isAdmin" class="bg-white dark:bg-[#0b1f3a] border border-[#d8e2ee] dark:border-[#1a365d] rounded-2xl p-5 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 transition-colors duration-300">
-      <div>
-        <h4 class="text-sm font-bold text-[#0b1f3a] dark:text-gray-200">Status Periode Pemilihan:</h4>
-        <div class="flex items-center space-x-2 mt-1">
-          <span
-            class="w-2.5 h-2.5 rounded-full"
-            :class="activePeriod ? 'bg-emerald-500 animate-pulse' : 'bg-rose-500'"
-          ></span>
-          <span class="text-sm font-bold" :class="activePeriod ? 'text-emerald-400' : 'text-rose-400'">
-            {{ activePeriod ? activePeriod.nama_periode + ' (BERJALAN)' : 'TIDAK ADA PERIODE AKTIF' }}
-          </span>
-        </div>
-      </div>
-
-      <div class="flex items-center space-x-2">
-        <button
-          v-if="!activePeriod"
-          @click="openPeriodModal"
-          class="px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg shadow-emerald-600/20 cursor-pointer"
-        >
-          + Buka Periode Pemilihan Baru
-        </button>
-        <button
-          v-else
-          @click="closeActivePeriod"
-          class="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-500 text-white font-bold text-xs shadow-lg shadow-rose-600/20 cursor-pointer"
-        >
-          Tutup Periode Pemilihan
-        </button>
-      </div>
-    </div>
-
     <!-- Admin / Kepsek Summary Stat Cards -->
     <div v-if="authStore.isAdmin || authStore.isKepalaSekolah" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
       <StatCard title="Jumlah Siswa" :value="stats.total_siswa" subtitle="Siswa terdaftar" />
@@ -105,12 +65,7 @@
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-2">
             <h3 class="text-lg font-bold text-[#0b1f3a] dark:text-white">Statistik Grafik Suara</h3>
-            <span v-if="isPolling" class="relative flex h-2 w-2">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
           </div>
-          <router-link to="/candidate" class="text-xs text-[#164574] dark:text-blue-400 hover:underline font-semibold">Lihat Kandidat &rarr;</router-link>
         </div>
         
         <div class="w-full">
@@ -123,12 +78,7 @@
         <div class="flex items-center justify-between mb-4">
           <div class="flex items-center gap-2">
             <h3 class="text-lg font-bold text-[#0b1f3a] dark:text-white">Persentase Suara Paslon</h3>
-            <span v-if="isPolling" class="relative flex h-2 w-2">
-              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-              <span class="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-            </span>
           </div>
-          <router-link to="/candidate" class="text-xs text-[#164574] dark:text-blue-400 hover:underline font-semibold">Lihat Kandidat &rarr;</router-link>
         </div>
 
         <div class="w-full h-72 sm:h-80 flex items-center justify-center">

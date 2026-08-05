@@ -1,12 +1,16 @@
 <template>
   <header class="bg-white dark:bg-[#0b1f3a] border-b border-[#d8e2ee] dark:border-[#1a365d] sticky top-0 z-30 px-4 py-3 sm:px-6 flex items-center justify-between transition-colors duration-300">
     <div class="flex items-center space-x-3">
+      <!-- Mobile Sidebar Toggle -->
+      <button
+        @click="uiStore.toggleSidebar()"
+        class="lg:hidden w-9 h-9 rounded-xl border border-[#d8e2ee] dark:border-[#1a365d] flex items-center justify-center text-[#0b1f3a] dark:text-white hover:bg-[#f8fafc] dark:hover:bg-[#1a365d] transition-colors cursor-pointer shrink-0"
+        aria-label="Buka menu navigasi"
+      >
+        <Menu class="w-5 h-5" />
+      </button>
+
       <!-- Logo Placeholder -->
-      <div class="w-9 h-9 rounded-xl bg-[#0b1f3a] dark:bg-white text-white dark:text-[#0b1f3a] flex items-center justify-center shadow-sm shrink-0">
-        <svg class="w-5.5 h-5.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-      </div>
       <div>
         <h1 class="text-lg font-black text-[#0b1f3a] dark:text-white leading-none">
           E-Voting OSIS
@@ -16,8 +20,6 @@
     </div>
 
     <div class="flex items-center space-x-4">
-      <!-- Theme Toggle -->
-      <ThemeToggle />
 
       <!-- Profile Dropdown Container -->
       <div class="relative" ref="dropdownRef">
@@ -88,10 +90,13 @@
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
 import ThemeToggle from './ThemeToggle.vue';
+import { Menu } from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth';
+import { useUiStore } from '@/stores/ui';
 import { useRouter } from 'vue-router';
 
 const authStore = useAuthStore();
+const uiStore = useUiStore();
 const router = useRouter();
 
 const isOpen = ref(false);

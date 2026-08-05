@@ -32,13 +32,13 @@
         <div v-if="authStore.isAdmin" class="mt-3 flex items-center space-x-2 justify-end">
           <button
             @click="editCandidate(c)"
-            class="px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/20 text-xs font-semibold cursor-pointer"
+            class="px-3 py-1.5 rounded-lg bg-amber-500/10 hover:bg-amber-500/20 text-black border border-amber-500/20 text-xs font-semibold cursor-pointer"
           >
             Edit Paslon
           </button>
           <button
             @click="deleteCandidate(c.calon_id)"
-            class="px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/20 text-xs font-semibold cursor-pointer"
+            class="px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-black border border-rose-500/20 text-xs font-semibold cursor-pointer"
           >
             Hapus
           </button>

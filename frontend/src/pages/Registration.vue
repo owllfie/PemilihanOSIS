@@ -82,7 +82,7 @@
             </tr>
           </thead>
           <tbody class="divide-y divide-[#d8e2ee]">
-            <tr v-for="r in registrations" :key="r.pendaftaran_id" class="hover:bg-[#f1f5f9] transition-colors">
+            <tr v-for="r in registrations" :key="r.pendaftaran_id" class="hover:bg-[#eef3f8] dark:hover:bg-[#1e293b] transition-colors">
               <td class="px-6 py-4 font-bold text-[#0b1f3a]">{{ r.siswa?.user?.nama || 'Unknown' }}</td>
               <td class="px-6 py-4">{{ r.siswa?.nis }} ({{ r.siswa?.kelas }})</td>
               <td class="px-6 py-4 max-w-xs truncate">{{ r.alasan }}</td>
