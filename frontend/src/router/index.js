@@ -5,6 +5,7 @@ import MainLayout from '@/layouts/MainLayout.vue';
 import AuthLayout from '@/layouts/AuthLayout.vue';
 
 import Login from '@/pages/Login.vue';
+import Landing from '@/pages/Landing.vue';
 import Dashboard from '@/pages/Dashboard.vue';
 import Candidate from '@/pages/Candidate.vue';
 import Vote from '@/pages/Vote.vue';
@@ -17,14 +18,15 @@ import Profile from '@/pages/Profile.vue';
 const routes = [
   {
     path: '/',
+    name: 'Landing',
+    component: Landing,
+  },
+  {
+    path: '/login',
     component: AuthLayout,
     children: [
       {
         path: '',
-        redirect: '/login',
-      },
-      {
-        path: 'login',
         name: 'Login',
         component: Login,
         meta: { guestOnly: true },

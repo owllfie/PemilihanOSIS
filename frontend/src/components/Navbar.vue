@@ -89,7 +89,6 @@
 
 <script setup>
 import { ref, onMounted, onUnmounted } from 'vue';
-import ThemeToggle from './ThemeToggle.vue';
 import { Menu } from 'lucide-vue-next';
 import { useAuthStore } from '@/stores/auth';
 import { useUiStore } from '@/stores/ui';
